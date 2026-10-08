@@ -1,0 +1,189 @@
+/* Базовые сбросы */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', 'PT Sans', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #1e2a3a;
+  background-color: #f8f9fa;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Шапка */
+.site-header {
+  background-color: #1a3a5c;
+  color: #ffffff;
+  padding: 30px 0;
+  border-bottom: 4px solid #2e6da4;
+}
+
+.site-header h1 {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.subtitle {
+  font-size: 15px;
+  opacity: 0.85;
+  margin-top: 6px;
+}
+
+/* Основной макет */
+.main-layout {
+  display: flex;
+  gap: 40px;
+  margin: 40px auto;
+  align-items: flex-start;
+}
+
+/* Боковое меню */
+.sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  background: #ffffff;
+  border: 1px solid #e0e6ed;
+  border-radius: 6px;
+  padding: 20px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+#section-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Раздел (верхний уровень) */
+.section-item {
+  border-bottom: 1px solid #eef2f6;
+}
+
+.section-item:last-child {
+  border-bottom: none;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  color: #1a3a5c;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.section-header:hover {
+  background-color: #f0f4f8;
+}
+
+.section-header .arrow {
+  font-size: 12px;
+  transition: transform 0.25s;
+  color: #6b7c8d;
+}
+
+.section-header.open .arrow {
+  transform: rotate(90deg);
+}
+
+/* Подразделы */
+.subsection-list {
+  display: none;
+  list-style: none;
+  padding: 4px 0 8px 0;
+  background-color: #f9fbfd;
+}
+
+.subsection-list.open {
+  display: block;
+}
+
+.subsection-link {
+  display: block;
+  padding: 10px 20px 10px 40px;
+  font-size: 14px;
+  color: #2c3e50;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.subsection-link:hover {
+  background-color: #e8eef5;
+  color: #1a3a5c;
+}
+
+.subsection-link.active {
+  background-color: #e3ecf5;
+  border-left-color: #2e6da4;
+  font-weight: 500;
+}
+
+/* Область контента */
+.content {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #e0e6ed;
+  border-radius: 6px;
+  padding: 40px;
+  min-height: 400px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.content h2 {
+  font-size: 24px;
+  color: #1a3a5c;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #eef2f6;
+}
+
+.content p {
+  margin-bottom: 14px;
+  color: #3a4a5a;
+}
+
+.welcome-message h2 {
+  color: #1a3a5c;
+}
+
+/* Подвал */
+.site-footer {
+  background-color: #1a3a5c;
+  color: #b0c4d8;
+  text-align: center;
+  padding: 20px 0;
+  font-size: 14px;
+  margin-top: 60px;
+}
+
+/* Адаптивность */
+@media (max-width: 800px) {
+  .main-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .content {
+    padding: 24px;
+  }
+}

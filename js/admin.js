@@ -78,6 +78,7 @@
       font-size: 15px;
       background: #fff;
       color: #1e2a3a;
+      font-family: inherit;
     }
 
     .form-group select:focus,
@@ -100,6 +101,7 @@
       font-weight: 500;
       cursor: pointer;
       transition: background 0.15s;
+      font-family: inherit;
     }
 
     .btn:hover {
@@ -144,6 +146,8 @@
       color: #1a3a5c;
       font-size: 15px;
       flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .subsection-card-body {
@@ -225,6 +229,7 @@
       font-size: 13px;
       color: #2c3e50;
       cursor: pointer;
+      font-family: inherit;
     }
 
     .upload-row input[type="file"]:hover {
@@ -271,6 +276,7 @@
       border-radius: 4px;
       font-size: 15px;
       margin-bottom: 14px;
+      font-family: inherit;
     }
 
     .login-box input[type="password"]:focus {
@@ -302,6 +308,7 @@
       border-radius: 3px;
       font-size: 12px;
       color: #1a3a5c;
+      font-family: Consolas, Monaco, monospace;
     }
 
     @media (max-width: 640px) {

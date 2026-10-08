@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Администрирование инструкций</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .admin-container { max-width: 800px; margin: 40px auto; padding: 30px; background: #fff; border: 1px solid #e0e6ed; border-radius: 6px; }
+    .admin-container h1 { color: #1a3a5c; margin-bottom: 24px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 6px; color: #1a3a5c; }
+    .form-group select, .form-group input { width: 100%; padding: 10px 12px; border: 1px solid #c0cdd9; border-radius: 4px; font-size: 15px; }
+    .btn { background: #2e6da4; color: #fff; border: none; padding: 12px 24px; border-radius: 4px; font-size: 15px; cursor: pointer; }
+    .btn:hover { background: #1a3a5c; }
+    .btn-danger { background: #b03030; margin-left: 10px; }
+    .btn-danger:hover { background: #8a2020; }
+    .subsection-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eef2f6; }
+    .login-box { text-align: center; padding: 60px 0; }
+    .login-box input { max-width: 300px; margin: 0 auto 16px; }
+  </style>
+</head>
+<body>
+
+  <div class="admin-container" id="admin-panel" style="display:none;">
+    <h1>Управление подразделами</h1>
+
+    <div class="form-group">
+      <label for="section-select">Раздел</label>
+      <select id="section-select"></select>
+    </div>
+
+    <div class="form-group">
+      <label for="subsection-title">Название подраздела</label>
+      <input type="text" id="subsection-title" placeholder="Например: Создание приказа">
+    </div>
+
+    <button class="btn" id="add-btn">Добавить подраздел</button>
+
+    <h2 style="margin-top:40px;font-size:18px;color:#1a3a5c;">Существующие подразделы</h2>
+    <div id="subsection-list-admin"></div>
+  </div>
+
+  <div class="login-box" id="login-box">
+    <h2 style="color:#1a3a5c;">Вход для администратора</h2>
+    <p style="margin:10px 0 20px;color:#6b7c8d;">Введите пароль для доступа к панели управления</p>
+    <input type="password" id="admin-password" placeholder="Пароль" style="padding:10px 12px;border:1px solid #c0cdd9;border-radius:4px;font-size:15px;display:block;">
+    <button class="btn" id="login-btn" style="margin-top:10px;">Войти</button>
+    <p id="login-error" style="color:#b03030;margin-top:10px;display:none;">Неверный пароль</p>
+  </div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

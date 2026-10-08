@@ -1,0 +1,42 @@
+{
+  "sections": [
+    {
+      "id": "students",
+      "title": "Работа со студентами",
+      "subsections": [
+        { "id": "student-card", "title": "Заполнение личной карточки студента" },
+        { "id": "student-contingent", "title": "Как работать с контингентом" }
+      ]
+    },
+    {
+      "id": "vedomosti",
+      "title": "Работа с ведомостями",
+      "subsections": [
+        { "id": "vedomost-create", "title": "Создание ведомости" },
+        { "id": "vedomost-edit", "title": "Редактирование ведомости" }
+      ]
+    },
+    {
+      "id": "otchety",
+      "title": "Работа с отчётами",
+      "subsections": [
+        { "id": "report-individual", "title": "Отчёт «Индивидуальный план преподавателя»" }
+      ]
+    },
+    {
+      "id": "nagruzka",
+      "title": "Распределение нагрузки",
+      "subsections": []
+    },
+    {
+      "id": "plany",
+      "title": "Учебные планы",
+      "subsections": []
+    },
+    {
+      "id": "diplomy",
+      "title": "Дипломы и приложения",
+      "subsections": []
+    }
+  ]
+}

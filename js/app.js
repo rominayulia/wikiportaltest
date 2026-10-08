@@ -19,7 +19,6 @@ async function loadStructure() {
     }
     const data = await response.json();
 
-    // >>>>>>>>> КЛЮЧЕВАЯ СТРОКА <<<<<<<<<
     // Сохраняем массив sections в глобальную переменную,
     // чтобы к нему имели доступ другие функции (showInstruction).
     window.__sectionsData = data.sections || [];
@@ -47,6 +46,7 @@ function renderSidebar(sections) {
     // Заголовок раздела (кликабельный, раскрывает подразделы)
     const header = document.createElement('button');
     header.className = 'section-header';
+    header.type = 'button';
     header.innerHTML = `
       <span>${section.title}</span>
       <span class="arrow">▶</span>
@@ -64,8 +64,6 @@ function renderSidebar(sections) {
         link.href = '#';
         link.textContent = sub.title;
 
-        // Передаём в датасеты минимально нужные идентификаторы.
-        // Сами данные функция showInstruction возьмёт из window.__sectionsData.
         link.dataset.subId = sub.id;
         link.dataset.sectionId = section.id;
 
@@ -87,6 +85,7 @@ function renderSidebar(sections) {
     // Раскрытие / закрытие раздела
     header.addEventListener('click', () => {
       const isOpen = subList.classList.contains('open');
+
       // Закрываем все ранее открытые подсписки
       document.querySelectorAll('.subsection-list.open').forEach(el => el.classList.remove('open'));
       document.querySelectorAll('.section-header.open').forEach(el => el.classList.remove('open'));
@@ -109,12 +108,11 @@ function renderSidebar(sections) {
 function showInstruction(sectionId, subId, title) {
   const contentArea = document.getElementById('content-area');
 
-  // Ищем раздел и подраздел в глобальной структуре,
-  // сохранённой в loadStructure().
+  // Ищем раздел и подраздел в глобальной структуре
   const section = window.__sectionsData.find(s => s.id === sectionId);
   const subsection = section?.subsections?.find(s => s.id === subId);
 
-  // Массив файлов (может быть пустым или отсутствовать — тогда [])
+  // Массив файлов (может отсутствовать — тогда пустой массив)
   const files = subsection?.files || [];
 
   // Готовим HTML со списком файлов
@@ -126,7 +124,7 @@ function showInstruction(sectionId, subId, title) {
         ${files.map(f => `
           <li class="file-item">
             <span class="file-icon">📄</span>
-            <a href="${f.path}" target="_blank" rel="noopener" class="file-link">${f.name}</a>
+            <a href="${f.path}" target="_blank" rel="noopener" class="file-link">${escapeHtml(f.name)}</a>
             <a href="${f.path}" download class="file-download">Скачать</a>
           </li>
         `).join('')}
@@ -137,8 +135,8 @@ function showInstruction(sectionId, subId, title) {
   }
 
   contentArea.innerHTML = `
-    <h2>${title}</h2>
-    <p class="breadcrumbs">${section?.title || sectionId} → ${title}</p>
+    <h2>${escapeHtml(title)}</h2>
+    <p class="breadcrumbs">${escapeHtml(section?.title || sectionId)} → ${escapeHtml(title)}</p>
     <hr class="divider">
     <p>Текст инструкции будет добавлен администратором.</p>
     ${filesHtml}
@@ -151,4 +149,17 @@ function showInstruction(sectionId, subId, title) {
 function highlightActive(activeLink) {
   document.querySelectorAll('.subsection-link').forEach(link => link.classList.remove('active'));
   activeLink.classList.add('active');
+}
+
+// ============================================================
+// Утилита: экранирование HTML во избежание XSS
+// ============================================================
+function escapeHtml(str) {
+  if (str === undefined || str === null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }

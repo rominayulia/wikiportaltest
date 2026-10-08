@@ -1,8 +1,14 @@
-/* Базовые сбросы */
+/* ============================================================
+   Базовые сбросы
+   ============================================================ */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -11,15 +17,21 @@ body {
   line-height: 1.6;
   color: #1e2a3a;
   background-color: #f8f9fa;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+  width: 100%;
 }
 
-/* Шапка */
+/* ============================================================
+   Шапка
+   ============================================================ */
 .site-header {
   background-color: #1a3a5c;
   color: #ffffff;
@@ -39,22 +51,27 @@ body {
   margin-top: 6px;
 }
 
-/* Основной макет */
+/* ============================================================
+   Основной макет
+   ============================================================ */
 .main-layout {
   display: flex;
   gap: 40px;
   margin: 40px auto;
   align-items: flex-start;
+  flex: 1;
 }
 
-/* Боковое меню */
+/* ============================================================
+   Боковое меню
+   ============================================================ */
 .sidebar {
-  width: 320px;
+  width: 340px;
   flex-shrink: 0;
   background: #ffffff;
   border: 1px solid #e0e6ed;
   border-radius: 6px;
-  padding: 20px 0;
+  padding: 10px 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
@@ -63,7 +80,6 @@ body {
   flex-direction: column;
 }
 
-/* Раздел (верхний уровень) */
 .section-item {
   border-bottom: 1px solid #eef2f6;
 }
@@ -86,6 +102,7 @@ body {
   width: 100%;
   text-align: left;
   transition: background 0.2s;
+  font-family: inherit;
 }
 
 .section-header:hover {
@@ -93,9 +110,10 @@ body {
 }
 
 .section-header .arrow {
-  font-size: 12px;
+  font-size: 11px;
   transition: transform 0.25s;
   color: #6b7c8d;
+  flex-shrink: 0;
 }
 
 .section-header.open .arrow {
@@ -122,6 +140,7 @@ body {
   text-decoration: none;
   transition: background 0.15s, color 0.15s;
   border-left: 3px solid transparent;
+  cursor: pointer;
 }
 
 .subsection-link:hover {
@@ -135,7 +154,9 @@ body {
   font-weight: 500;
 }
 
-/* Область контента */
+/* ============================================================
+   Область контента
+   ============================================================ */
 .content {
   flex: 1;
   background: #ffffff;
@@ -149,9 +170,7 @@ body {
 .content h2 {
   font-size: 24px;
   color: #1a3a5c;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #eef2f6;
+  margin-bottom: 16px;
 }
 
 .content p {
@@ -161,37 +180,31 @@ body {
 
 .welcome-message h2 {
   color: #1a3a5c;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #eef2f6;
 }
 
-/* Подвал */
-.site-footer {
-  background-color: #1a3a5c;
-  color: #b0c4d8;
-  text-align: center;
-  padding: 20px 0;
-  font-size: 14px;
-  margin-top: 60px;
+.breadcrumbs {
+  font-size: 13px;
+  color: #6b7c8d;
+  margin-bottom: 12px;
 }
 
-/* Адаптивность */
-@media (max-width: 800px) {
-  .main-layout {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-  }
-
-  .content {
-    padding: 24px;
-  }
+.divider {
+  border: none;
+  border-top: 1px solid #eef2f6;
+  margin: 16px 0 20px;
 }
-/* Блок прикреплённых файлов */
+
+/* ============================================================
+   Блок прикреплённых файлов (для пользователя)
+   ============================================================ */
 .files-title {
   font-size: 17px;
   color: #1a3a5c;
-  margin: 24px 0 12px;
+  margin: 28px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eef2f6;
 }
 
 .files-list {
@@ -209,11 +222,12 @@ body {
   border-radius: 6px;
   margin-bottom: 8px;
   background: #f9fbfd;
-  transition: background 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .file-item:hover {
   background: #eef4fa;
+  border-color: #c0cdd9;
 }
 
 .file-icon {
@@ -226,6 +240,9 @@ body {
   text-decoration: none;
   font-weight: 500;
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .file-link:hover {
@@ -237,9 +254,11 @@ body {
   color: #6b7c8d;
   text-decoration: none;
   border: 1px solid #c0cdd9;
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 4px;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .file-download:hover {
@@ -252,38 +271,52 @@ body {
   color: #8a9aa8;
   font-style: italic;
   margin-top: 16px;
-}
-
-.breadcrumbs {
-  font-size: 13px;
-  color: #6b7c8d;
-  margin-bottom: 12px;
-}
-
-.divider {
-  border: none;
-  border-top: 1px solid #eef2f6;
-  margin: 16px 0;
-}
-
-/* Стили админ-панели для файлов */
-.file-admin-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  border: 1px solid #e0e6ed;
-  border-radius: 4px;
-  margin-bottom: 6px;
+  padding: 12px 16px;
   background: #f9fbfd;
+  border-left: 3px solid #e0e6ed;
+  border-radius: 0 4px 4px 0;
 }
 
-.file-admin-item span {
+/* ============================================================
+   Подвал
+   ============================================================ */
+.site-footer {
+  background-color: #1a3a5c;
+  color: #b0c4d8;
+  text-align: center;
+  padding: 20px 0;
   font-size: 14px;
-  color: #2c3e50;
+  margin-top: 60px;
 }
 
-.file-admin-item .btn-danger {
-  padding: 6px 12px;
-  font-size: 13px;
+/* ============================================================
+   Адаптивность
+   ============================================================ */
+@media (max-width: 800px) {
+  .main-layout {
+    flex-direction: column;
+    gap: 20px;
+    margin: 20px auto;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .content {
+    padding: 24px;
+  }
+
+  .file-item {
+    flex-wrap: wrap;
+  }
+
+  .file-link {
+    flex-basis: 100%;
+    order: 2;
+  }
+
+  .file-download {
+    order: 3;
+  }
 }

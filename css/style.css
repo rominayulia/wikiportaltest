@@ -187,3 +187,103 @@ body {
     padding: 24px;
   }
 }
+/* Блок прикреплённых файлов */
+.files-title {
+  font-size: 17px;
+  color: #1a3a5c;
+  margin: 24px 0 12px;
+}
+
+.files-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid #e0e6ed;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background: #f9fbfd;
+  transition: background 0.15s;
+}
+
+.file-item:hover {
+  background: #eef4fa;
+}
+
+.file-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.file-link {
+  color: #2e6da4;
+  text-decoration: none;
+  font-weight: 500;
+  flex: 1;
+}
+
+.file-link:hover {
+  text-decoration: underline;
+}
+
+.file-download {
+  font-size: 13px;
+  color: #6b7c8d;
+  text-decoration: none;
+  border: 1px solid #c0cdd9;
+  padding: 4px 10px;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.file-download:hover {
+  background: #2e6da4;
+  color: #fff;
+  border-color: #2e6da4;
+}
+
+.no-files {
+  color: #8a9aa8;
+  font-style: italic;
+  margin-top: 16px;
+}
+
+.breadcrumbs {
+  font-size: 13px;
+  color: #6b7c8d;
+  margin-bottom: 12px;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #eef2f6;
+  margin: 16px 0;
+}
+
+/* Стили админ-панели для файлов */
+.file-admin-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid #e0e6ed;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  background: #f9fbfd;
+}
+
+.file-admin-item span {
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+.file-admin-item .btn-danger {
+  padding: 6px 12px;
+  font-size: 13px;
+}

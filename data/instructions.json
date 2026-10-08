@@ -4,23 +4,45 @@
       "id": "students",
       "title": "Работа со студентами",
       "subsections": [
-        { "id": "student-card", "title": "Заполнение личной карточки студента" },
-        { "id": "student-contingent", "title": "Как работать с контингентом" }
+        {
+          "id": "student-card",
+          "title": "Заполнение личной карточки студента",
+          "files": [
+            { "name": "Карточка студента.pdf", "path": "files/student-card.pdf" }
+          ]
+        },
+        {
+          "id": "student-contingent",
+          "title": "Как работать с контингентом",
+          "files": []
+        }
       ]
     },
     {
       "id": "vedomosti",
       "title": "Работа с ведомостями",
       "subsections": [
-        { "id": "vedomost-create", "title": "Создание ведомости" },
-        { "id": "vedomost-edit", "title": "Редактирование ведомости" }
+        {
+          "id": "vedomost-create",
+          "title": "Создание ведомости",
+          "files": []
+        },
+        {
+          "id": "vedomost-edit",
+          "title": "Редактирование ведомости",
+          "files": []
+        }
       ]
     },
     {
       "id": "otchety",
       "title": "Работа с отчётами",
       "subsections": [
-        { "id": "report-individual", "title": "Отчёт «Индивидуальный план преподавателя»" }
+        {
+          "id": "report-individual",
+          "title": "Отчёт «Индивидуальный план преподавателя»",
+          "files": []
+        }
       ]
     },
     {

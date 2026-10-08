@@ -1,393 +1,289 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Администрирование инструкций — 1С:Университет</title>
-  <link rel="stylesheet" href="css/style.css">
-  <style>
-    /* ---------- Локальные стили админ-панели ---------- */
+// ============================================================
+// Пароль администратора (замените на свой)
+// ============================================================
+const ADMIN_PASSWORD = '1c-university-admin';
 
-    body {
-      background-color: #f8f9fa;
-    }
+// ============================================================
+// Глобальное хранилище загруженной структуры
+// ============================================================
+let currentData = null;
 
-    .admin-header {
-      background-color: #1a3a5c;
-      color: #fff;
-      padding: 24px 0;
-      border-bottom: 4px solid #2e6da4;
-    }
+// ============================================================
+// Инициализация
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('login-btn').addEventListener('click', tryLogin);
+  document.getElementById('admin-password').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') tryLogin();
+  });
+});
 
-    .admin-header h1 {
-      font-size: 22px;
-      font-weight: 600;
-    }
+// ============================================================
+// Вход по паролю
+// ============================================================
+function tryLogin() {
+  const input = document.getElementById('admin-password').value;
+  if (input === ADMIN_PASSWORD) {
+    document.getElementById('login-box').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    loadDataForAdmin();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
 
-    .admin-header p {
-      font-size: 14px;
-      opacity: 0.85;
-      margin-top: 4px;
-    }
+// ============================================================
+// Загрузка JSON для админки
+// ============================================================
+async function loadDataForAdmin() {
+  try {
+    const response = await fetch('data/instructions.json');
+    if (!response.ok) throw new Error('Не удалось загрузить instructions.json');
+    currentData = await response.json();
 
-    .admin-container {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 32px;
-      background: #fff;
-      border: 1px solid #e0e6ed;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    }
+    // Заполняем выпадающий список разделов
+    const select = document.getElementById('section-select');
+    select.innerHTML = '';
+    currentData.sections.forEach(section => {
+      const option = document.createElement('option');
+      option.value = section.id;
+      option.textContent = section.title;
+      select.appendChild(option);
+    });
 
-    .admin-container h1 {
-      color: #1a3a5c;
-      margin-bottom: 24px;
-      font-size: 22px;
-    }
+    // Первичная отрисовка подразделов
+    renderAdminSubsections();
 
-    .admin-container h2 {
-      margin-top: 34px;
-      font-size: 18px;
-      color: #1a3a5c;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #eef2f6;
-    }
+    // Обработчики
+    document.getElementById('add-btn').addEventListener('click', addSubsection);
+    select.addEventListener('change', renderAdminSubsections);
+  } catch (error) {
+    console.error('Ошибка загрузки:', error);
+    document.getElementById('subsection-list-admin').innerHTML =
+      '<p class="empty-state" style="color:#b03030;">Не удалось загрузить данные.</p>';
+  }
+}
 
-    /* ---------- Формы ---------- */
+// ============================================================
+// Отрисовка карточек подразделов с файлами
+// ============================================================
+function renderAdminSubsections() {
+  const sectionId = document.getElementById('section-select').value;
+  const section = currentData.sections.find(s => s.id === sectionId);
+  const container = document.getElementById('subsection-list-admin');
+  container.innerHTML = '';
 
-    .form-group {
-      margin-bottom: 18px;
-    }
+  if (!section || !section.subsections || section.subsections.length === 0) {
+    container.innerHTML = '<p class="empty-state">Подразделов пока нет.</p>';
+    return;
+  }
 
-    .form-group label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #1a3a5c;
-      font-size: 14px;
-    }
+  section.subsections.forEach((sub, index) => {
+    // Убедимся, что у подраздела есть массив files
+    if (!sub.files) sub.files = [];
 
-    .form-group select,
-    .form-group input[type="text"],
-    .form-group input[type="password"] {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #c0cdd9;
-      border-radius: 4px;
-      font-size: 15px;
-      background: #fff;
-      color: #1e2a3a;
-      font-family: inherit;
-    }
+    // -------- Карточка подраздела --------
+    const card = document.createElement('div');
+    card.className = 'subsection-card';
 
-    .form-group select:focus,
-    .form-group input:focus {
-      outline: none;
-      border-color: #2e6da4;
-      box-shadow: 0 0 0 2px rgba(46, 109, 164, 0.15);
-    }
-
-    /* ---------- Кнопки ---------- */
-
-    .btn {
-      display: inline-block;
-      background: #2e6da4;
-      color: #fff;
-      border: none;
-      padding: 11px 22px;
-      border-radius: 4px;
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.15s;
-      font-family: inherit;
-    }
-
-    .btn:hover {
-      background: #1a3a5c;
-    }
-
-    .btn-danger {
-      background: #b03030;
-    }
-
-    .btn-danger:hover {
-      background: #8a2020;
-    }
-
-    .btn-small {
-      padding: 6px 12px;
-      font-size: 13px;
-    }
-
-    /* ---------- Карточка подраздела ---------- */
-
-    .subsection-card {
-      border: 1px solid #e0e6ed;
-      border-radius: 6px;
-      margin-bottom: 18px;
-      overflow: hidden;
-      background: #fff;
-    }
-
-    .subsection-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 18px;
-      background: #f4f7fb;
-      border-bottom: 1px solid #e0e6ed;
-      gap: 12px;
-    }
-
-    .subsection-card-header .title {
-      font-weight: 600;
-      color: #1a3a5c;
-      font-size: 15px;
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .subsection-card-body {
-      padding: 16px 18px;
-    }
-
-    .subsection-card-body h4 {
-      font-size: 14px;
-      color: #1a3a5c;
-      margin-bottom: 10px;
-      font-weight: 600;
-    }
-
-    /* ---------- Список файлов ---------- */
-
-    .file-admin-list {
-      list-style: none;
-      padding: 0;
-      margin: 0 0 14px 0;
-    }
-
-    .file-admin-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 9px 12px;
-      border: 1px solid #e0e6ed;
-      border-radius: 4px;
-      margin-bottom: 6px;
-      background: #f9fbfd;
-      gap: 10px;
-    }
-
-    .file-admin-item .file-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex: 1;
-      min-width: 0;
-    }
-
-    .file-admin-item .file-info span {
-      font-size: 14px;
-      color: #2c3e50;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .file-admin-item .file-path {
-      font-size: 12px;
-      color: #8a9aa8;
-      margin-left: 4px;
-    }
-
-    .no-files-hint {
-      font-size: 13px;
-      color: #8a9aa8;
-      font-style: italic;
-      margin-bottom: 12px;
-    }
-
-    /* ---------- Блок загрузки ---------- */
-
-    .upload-row {
-      display: flex;
-      gap: 10px;
-      align-items: stretch;
-      flex-wrap: wrap;
-    }
-
-    .upload-row input[type="file"] {
-      flex: 1;
-      min-width: 220px;
-      padding: 8px 10px;
-      border: 1px dashed #c0cdd9;
-      border-radius: 4px;
-      background: #fff;
-      font-size: 13px;
-      color: #2c3e50;
-      cursor: pointer;
-      font-family: inherit;
-    }
-
-    .upload-row input[type="file"]:hover {
-      border-color: #2e6da4;
-      background: #f7fafd;
-    }
-
-    .hint {
-      font-size: 12px;
-      color: #6b7c8d;
-      margin-top: 8px;
-      line-height: 1.5;
-    }
-
-    /* ---------- Логин ---------- */
-
-    .login-box {
-      max-width: 420px;
-      margin: 80px auto;
-      padding: 40px 32px;
-      background: #fff;
-      border: 1px solid #e0e6ed;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-      text-align: center;
-    }
-
-    .login-box h2 {
-      color: #1a3a5c;
-      font-size: 20px;
-      margin-bottom: 8px;
-    }
-
-    .login-box p {
-      color: #6b7c8d;
-      font-size: 14px;
-      margin-bottom: 22px;
-    }
-
-    .login-box input[type="password"] {
-      width: 100%;
-      padding: 11px 14px;
-      border: 1px solid #c0cdd9;
-      border-radius: 4px;
-      font-size: 15px;
-      margin-bottom: 14px;
-      font-family: inherit;
-    }
-
-    .login-box input[type="password"]:focus {
-      outline: none;
-      border-color: #2e6da4;
-      box-shadow: 0 0 0 2px rgba(46, 109, 164, 0.15);
-    }
-
-    .login-error {
-      color: #b03030;
-      margin-top: 12px;
-      font-size: 13px;
-      display: none;
-    }
-
-    /* ---------- Прочее ---------- */
-
-    .empty-state {
-      padding: 20px;
-      text-align: center;
-      color: #8a9aa8;
-      font-size: 14px;
-      font-style: italic;
-    }
-
-    code {
-      background: #f0f4f8;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 12px;
-      color: #1a3a5c;
-      font-family: Consolas, Monaco, monospace;
-    }
-
-    @media (max-width: 640px) {
-      .admin-container {
-        margin: 20px auto;
-        padding: 20px;
+    // Заголовок карточки
+    const header = document.createElement('div');
+    header.className = 'subsection-card-header';
+    header.innerHTML = `
+      <span class="title">${escapeHtml(sub.title)}</span>
+      <button class="btn btn-danger btn-small" data-del-index="${index}">
+        Удалить подраздел
+      </button>
+    `;
+    header.querySelector('[data-del-index]').addEventListener('click', () => {
+      if (confirm(`Удалить подраздел «${sub.title}» со всеми файлами?`)) {
+        section.subsections.splice(index, 1);
+        saveAndRender();
       }
+    });
 
-      .subsection-card-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+    // Тело карточки
+    const body = document.createElement('div');
+    body.className = 'subsection-card-body';
 
-      .upload-row {
-        flex-direction: column;
-      }
+    // ---- Список уже прикреплённых файлов ----
+    let filesHtml = '<h4>Прикреплённые PDF-файлы:</h4>';
+
+    if (sub.files.length === 0) {
+      filesHtml += '<p class="no-files-hint">Файлов пока нет.</p>';
+    } else {
+      filesHtml += '<ul class="file-admin-list">';
+      sub.files.forEach((file, fileIndex) => {
+        filesHtml += `
+          <li class="file-admin-item">
+            <div class="file-info">
+              <span>📄 ${escapeHtml(file.name)}</span>
+              <span class="file-path">${escapeHtml(file.path)}</span>
+            </div>
+            <button class="btn btn-danger btn-small"
+                    data-file-index="${fileIndex}"
+                    data-sub-index="${index}">
+              Удалить
+            </button>
+          </li>
+        `;
+      });
+      filesHtml += '</ul>';
     }
-  </style>
-</head>
-<body>
 
-  <!-- ============ ШАПКА ============ -->
-  <header class="admin-header">
-    <div class="container">
-      <h1>Администрирование инструкций 1С:Университет</h1>
-      <p>Управление подразделами и прикреплёнными PDF-файлами</p>
-    </div>
-  </header>
+    // ---- Блок загрузки новых файлов ----
+    filesHtml += `
+      <div class="upload-row">
+        <input type="file"
+               accept="application/pdf"
+               multiple
+               data-upload-index="${index}">
+        <button class="btn" data-upload-btn="${index}">Прикрепить PDF</button>
+      </div>
+      <p class="hint">
+        Можно выбрать несколько PDF-файлов сразу. После прикрепления
+        скачайте обновлённый <code>instructions.json</code> и положите
+        PDF-файлы в папку <code>files/</code>.
+      </p>
+    `;
 
-  <!-- ============ ФОРМА ВХОДА ============ -->
-  <div class="login-box" id="login-box">
-    <h2>Вход для администратора</h2>
-    <p>Введите пароль для доступа к панели управления</p>
+    body.innerHTML = filesHtml;
 
-    <input type="password" id="admin-password" placeholder="Пароль" autocomplete="current-password">
+    // ---- Обработчики удаления файлов ----
+    body.querySelectorAll('[data-file-index]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const fi = parseInt(btn.dataset.fileIndex, 10);
+        const si = parseInt(btn.dataset.subIndex, 10);
+        const fileName = section.subsections[si].files[fi].name;
+        if (confirm(`Удалить файл «${fileName}»?`)) {
+          section.subsections[si].files.splice(fi, 1);
+          saveAndRender();
+        }
+      });
+    });
 
-    <button class="btn" id="login-btn" style="width:100%;">Войти</button>
+    // ---- Обработчик прикрепления файлов ----
+    const uploadBtn = body.querySelector('[data-upload-btn]');
+    const fileInput = body.querySelector('[data-upload-index]');
 
-    <p class="login-error" id="login-error">Неверный пароль</p>
-  </div>
+    uploadBtn.addEventListener('click', () => {
+      const si = parseInt(uploadBtn.dataset.uploadBtn, 10);
+      handleFilesUpload(section.subsections[si], fileInput.files);
+      fileInput.value = '';
+    });
 
-  <!-- ============ ОСНОВНАЯ ПАНЕЛЬ ============ -->
-  <div class="admin-container" id="admin-panel" style="display:none;">
+    card.appendChild(header);
+    card.appendChild(body);
+    container.appendChild(card);
+  });
+}
 
-    <h1>Управление подразделами и файлами</h1>
+// ============================================================
+// Обработка загруженных PDF-файлов
+// ============================================================
+function handleFilesUpload(subsection, fileList) {
+  if (!fileList || fileList.length === 0) {
+    alert('Файлы не выбраны.');
+    return;
+  }
 
-    <!-- Выбор раздела -->
-    <div class="form-group">
-      <label for="section-select">Раздел</label>
-      <select id="section-select"></select>
-    </div>
+  const added = [];
 
-    <!-- Добавление нового подраздела -->
-    <div class="form-group">
-      <label for="subsection-title">Название нового подраздела</label>
-      <input
-        type="text"
-        id="subsection-title"
-        placeholder="Например: Создание приказа"
-        autocomplete="off"
-      >
-    </div>
+  for (const file of fileList) {
+    // Проверка на PDF
+    const isPdf = file.type === 'application/pdf' ||
+                  file.name.toLowerCase().endsWith('.pdf');
 
-    <button class="btn" id="add-btn">Добавить подраздел</button>
+    if (!isPdf) {
+      alert(`Файл «${file.name}» не является PDF и будет пропущен.`);
+      continue;
+    }
 
-    <!-- Список существующих подразделов и файлов -->
-    <h2>Существующие подразделы и прикреплённые файлы</h2>
-    <div id="subsection-list-admin">
-      <p class="empty-state">Загрузка…</p>
-    </div>
+    // Формируем безопасный путь: files/<имя>.pdf
+    const safeName = file.name
+      .replace(/\s+/g, '_')
+      .replace(/[^a-zA-Zа-яА-ЯёЁ0-9._-]/g, '');
+    const path = `files/${safeName}`;
 
-    <!-- Информация о сохранении -->
-    <p class="hint" style="margin-top:24px;">
-      После любых изменений автоматически скачивается обновлённый
-      <code>instructions.json</code>. Замените его в папке <code>data/</code>,
-      а скачанные PDF-файлы положите в папку <code>files/</code>.
-    </p>
-  </div>
+    // Проверка на дубликат по имени
+    if (subsection.files.some(f => f.name === file.name)) {
+      alert(`Файл «${file.name}» уже прикреплён к этому подразделу.`);
+      continue;
+    }
 
-  <script src="js/admin.js"></script>
-</body>
-</html>
+    subsection.files.push({ name: file.name, path });
+    added.push(file.name);
+
+    // Скачиваем сам файл, чтобы админ положил его в папку files/
+    downloadBlob(file, file.name);
+  }
+
+  if (added.length > 0) {
+    saveAndRender();
+  }
+}
+
+// ============================================================
+// Добавление нового подраздела
+// ============================================================
+function addSubsection() {
+  const sectionId = document.getElementById('section-select').value;
+  const title = document.getElementById('subsection-title').value.trim();
+
+  if (!title) {
+    alert('Введите название подраздела.');
+    return;
+  }
+
+  const section = currentData.sections.find(s => s.id === sectionId);
+  if (!section) return;
+
+  if (!section.subsections) section.subsections = [];
+
+  // Генерируем уникальный id
+  const id = title.toLowerCase()
+    .replace(/[^a-zа-яё0-9\s]/gi, '')
+    .replace(/\s+/g, '-')
+    .substring(0, 40) + '-' + Date.now();
+
+  section.subsections.push({ id, title, files: [] });
+  document.getElementById('subsection-title').value = '';
+  saveAndRender();
+}
+
+// ============================================================
+// Сохранение: скачивание обновлённого instructions.json
+// ============================================================
+function saveAndRender() {
+  const jsonStr = JSON.stringify(currentData, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  downloadBlob(blob, 'instructions.json');
+  renderAdminSubsections();
+}
+
+// ============================================================
+// Утилита: скачивание Blob-файла
+// ============================================================
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+// ============================================================
+// Утилита: экранирование HTML во избежание XSS
+// ============================================================
+function escapeHtml(str) {
+  if (str === undefined || str === null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
